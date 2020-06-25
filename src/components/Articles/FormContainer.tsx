@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Layout from '../../components/Articles/Form';
+import { Container, Content } from 'native-base';
+import Form from './Form';
 
 interface ArticlesFormProps {
     userInput: { email: string},
@@ -49,13 +50,18 @@ class ArticlesFormContainer extends Component<ArticlesFormProps, ArticlesFormSta
     const { error, loading, success } = this.state;
 
     return (
-      <Layout
-        error={error}
-        loading={loading}
-        success={success}
-        defaultValues={userInput}
-        onFormSubmit={this.onFormSubmit}
-      />
+      <Container>
+        <Content padder>
+          <Form
+            error={error}
+            loading={loading}
+            success={success}
+            defaultValues={userInput}
+            onFormSubmit={this.onFormSubmit}
+          />
+
+        </Content>
+      </Container>
     );
   };
 }

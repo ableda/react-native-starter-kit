@@ -4,8 +4,8 @@ import { Icon } from 'native-base';
 import DefaultProps from '../constants/navigation';
 import AppConfig from '../constants/config';
 
-import Home from '../containers/Home';
-import { ArticlesForm, ArticlesList, ArticlesSingle } from '../containers';
+import Home from '../components/Home';
+import { ArticlesForm, ArticlesList, ArticlesSingle } from '../components/Articles';
 
 const Index = (
   <Stack hideNavBar>

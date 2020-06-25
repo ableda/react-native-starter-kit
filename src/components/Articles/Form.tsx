@@ -2,8 +2,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import {
-  Container,
-  Content,
+  View,
   Text,
   Form,
   Item,
@@ -13,11 +12,10 @@ import {
 } from 'native-base';
 import { Messages, Header, Spacer } from '../UI';
 import { errorMessages } from '../../constants/messages';
-import { ArticlesFormProps } from '../../types/ArticlesFormProps';
 
 const ArticlesForm = ({
   error, loading, success, onFormSubmit, defaultValues,
-}: ArticlesFormProps) => {
+}) => {
   const {
     register, handleSubmit, errors, setValue,
   } = useForm({ defaultValues });
@@ -27,38 +25,36 @@ const ArticlesForm = ({
   }, [register]);
 
   return (
-    <Container>
-      <Content padder>
-        <Header
-          title="Example form"
-          content="When you submit the form, it'll simply save to your redux store"
-        />
+    <View>
+      <Header
+        title="Example form"
+        content="When you submit the form, it'll simply save to your redux store"
+      />
 
-        {error && <Messages message={error} />}
-        {loading && <Messages type="info" message="Loading..." />}
-        {success && <Messages type="success" message={success} />}
+      {error && <Messages message={error} />}
+      {loading && <Messages type="info" message="Loading..." />}
+      {success && <Messages type="success" message={success} />}
 
-        <Form>
-          <Item stackedLabel>
-            <Label>Email*</Label>
-            <Input
-              autoCapitalize="none"
-              placeholder="james@doe.com"
-              keyboardType="email-address"
-              defaultValue={defaultValues.email || ''}
-              onChangeText={(value) => setValue('email', value)}
-            />
-          </Item>
-          {errors.email && <Text>{errors.email.message}</Text>}
+      <Form>
+        <Item stackedLabel>
+          <Label>Email*</Label>
+          <Input
+            autoCapitalize="none"
+            placeholder="james@doe.com"
+            keyboardType="email-address"
+            defaultValue={defaultValues.email || ''}
+            onChangeText={(value) => setValue('email', value)}
+          />
+        </Item>
+        {errors.email && <Text>{errors.email.message}</Text>}
 
-          <Spacer size={20} />
+        <Spacer size={20} />
 
-          <Button block onPress={handleSubmit(onFormSubmit)} disabled={loading}>
-            <Text>{loading ? 'Loading' : 'Submit'}</Text>
-          </Button>
-        </Form>
-      </Content>
-    </Container>
+        <Button block onPress={handleSubmit(onFormSubmit)} disabled={loading}>
+          <Text>{loading ? 'Loading' : 'Submit'}</Text>
+        </Button>
+      </Form>
+    </View>
   );
 };
 

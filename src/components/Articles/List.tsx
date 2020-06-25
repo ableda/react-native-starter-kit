@@ -1,117 +1,159 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Actions } from 'react-native-router-flux';
-import { FlatList, TouchableOpacity, Image, StyleProp, ImageStyle } from 'react-native';
-import {
-  Container, Card, CardItem, Body, Text, Button,
-} from 'native-base';
+import { FlatList, TouchableOpacity, Image } from 'react-native';
+import { Container, Card, CardItem, Body, Text, Button } from 'native-base';
 import { Error, Spacer } from '../UI';
 import { errorMessages } from '../../constants/messages';
-import { ArticlesListProps } from '../../types/ArticlesListProps';
+import images from '../../styles/images';
+import { ArticlesListProps, ArticlesListState } from '../../types/ArticlesList';
 
-const imageStyle: StyleProp<ImageStyle> = {
-  height: 100,
-  width: undefined,
-  flex: 1,
-  overflow: 'hidden',
-  borderRadius: 5,
-  borderBottomLeftRadius: 0,
-  borderBottomRightRadius: 0,
-};
+class ArticlesListContainer extends Component<ArticlesListProps, ArticlesListState> {
+  static propTypes = {
+    listFlat: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    listPaginated: PropTypes.shape({}).isRequired,
+    meta: PropTypes.shape({
+      page: PropTypes.number,
+    }).isRequired,
+    fetchData: PropTypes.func.isRequired,
+    pagination: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    page: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  };
 
-const ArticlesList = ({
-  error, loading, listFlat, reFetch, meta,
-}: ArticlesListProps) => {
-  if (error) {
-    return <Error content={error} tryAgain={reFetch} />;
+  static defaultProps = {
+    page: 1,
+  };
+
+  constructor(props) {
+    super(props);
+
+    // Prioritize (web) page route over last meta value
+    const page = props.page || props.meta.page;
+
+    this.state = {
+      error: undefined,
+      loading: false,
+      page: parseInt(page, 10) || 1,
+    };
   }
 
-  if (listFlat.length < 1) {
-    return <Error content={errorMessages.articlesEmpty} />;
-  }
+  componentDidMount = () => this.fetchData();
 
-  return (
-    <Container style={{ padding: 10 }}>
-      <FlatList
-        data={listFlat}
-        onRefresh={() => reFetch({ forceSync: true })}
-        refreshing={loading}
-        renderItem={({ item }) => (
-          <Card style={{ opacity: item.placeholder ? 0.3 : 1 }}>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => (
-                !item.placeholder
-                  ? Actions.articlesSingle({ id: item.id, title: item.name })
-                  : null
-              )}
-              style={{ flex: 1 }}
-            >
-              <CardItem cardBody>
-                {!!item.image && (
-                  <Image
-                    source={{ uri: item.image }}
-                    style={imageStyle}
-                  />
-                )}
-              </CardItem>
-              <CardItem cardBody>
-                <Body style={{ paddingHorizontal: 15 }}>
-                  <Spacer size={10} />
-                  <Text style={{ fontWeight: '800' }}>{item.name}</Text>
-                  <Spacer size={15} />
-                  {!!item.excerpt && <Text>{item.excerpt}</Text>}
-                  <Spacer size={5} />
-                </Body>
-              </CardItem>
-            </TouchableOpacity>
-          </Card>
-        )}
-        keyExtractor={(item) => `${item.id}-${item.name}`}
-        ListFooterComponent={(meta && meta.page && meta.lastPage && meta.page < meta.lastPage)
-          ? () => (
-            <React.Fragment>
-              <Spacer size={20} />
-              <Button
-                block
-                bordered
-                onPress={() => reFetch({ incrementPage: true })}
+  /**
+   * If the page prop changes, update state
+   */
+  componentDidUpdate = (prevProps) => {
+    const { page } = this.props;
+    const { page: prevPage } = prevProps;
+
+    if (page !== prevPage) {
+      // eslint-disable-next-line
+      this.setState(
+        {
+          error: undefined,
+          loading: false,
+          page: parseInt(page, 10) || 1,
+        },
+        this.fetchData,
+      );
+    }
+  };
+
+  /**
+   * Fetch Data
+   */
+  fetchData = async ({ forceSync = false, incrementPage = false } = {}) => {
+    const { fetchData } = this.props;
+
+    let { page } = this.state;
+    page = incrementPage ? page + 1 : page; // Force fetch the next page worth of data when requested
+    page = forceSync ? 1 : page; // Start from scratch
+
+    this.setState({ loading: true, error: undefined, page });
+
+    try {
+      await fetchData({ forceSync, page });
+      this.setState({ loading: false, error: undefined });
+    } catch (err) {
+      this.setState({ loading: false, error: err.message });
+    }
+  };
+
+  /**
+   * Render
+   */
+  render = () => {
+    const { listFlat, meta } = this.props;
+    const { loading, error } = this.state;
+
+    if (error) {
+      return <Error content={error} tryAgain={this.fetchData} />;
+    }
+
+    if (listFlat.length < 1) {
+      return <Error content={errorMessages.articlesEmpty} />;
+    }
+
+    return (
+      <Container style={{ padding: 10 }}>
+        <FlatList
+          data={listFlat}
+          onRefresh={() => this.fetchData({ forceSync: true })}
+          refreshing={loading}
+          renderItem={({ item }) => (
+            <Card style={{ opacity: item.placeholder ? 0.3 : 1 }}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() =>
+                  !item.placeholder ? Actions.articlesSingle({ id: item.id, title: item.name }) : null
+                }
+                style={{ flex: 1 }}
               >
-                <Text>Load More</Text>
-              </Button>
-            </React.Fragment>
-          ) : null}
-      />
+                <CardItem cardBody>
+                  {!!item.image && <Image source={{ uri: item.image }} style={images.articleImage} />}
+                </CardItem>
+                <CardItem cardBody>
+                  <Body style={{ paddingHorizontal: 15 }}>
+                    <Spacer size={10} />
+                    <Text style={{ fontWeight: '800' }}>{item.name}</Text>
+                    <Spacer size={15} />
+                    {!!item.excerpt && <Text>{item.excerpt}</Text>}
+                    <Spacer size={5} />
+                  </Body>
+                </CardItem>
+              </TouchableOpacity>
+            </Card>
+          )}
+          keyExtractor={(item) => `${item.id}-${item.name}`}
+          ListFooterComponent={
+            meta && meta.page && meta.lastPage && meta.page < meta.lastPage
+              ? () => (
+                  <React.Fragment>
+                    <Spacer size={20} />
+                    <Button block bordered onPress={() => this.fetchData({ incrementPage: true })}>
+                      <Text>Load More</Text>
+                    </Button>
+                  </React.Fragment>
+                )
+              : null
+          }
+        />
+        <Spacer size={20} />
+      </Container>
+    );
+  };
+}
 
-      <Spacer size={20} />
-    </Container>
-  );
-};
+const mapStateToProps = (state) => ({
+  listFlat: state.articles.listFlat || [],
+  listPaginated: state.articles.listPaginated || {},
+  meta: state.articles.meta || [],
+  pagination: state.articles.pagination || {},
+});
 
-ArticlesList.propTypes = {
-  error: PropTypes.string,
-  loading: PropTypes.bool,
-  listFlat: PropTypes.arrayOf(
-    PropTypes.shape({
-      placeholder: PropTypes.bool,
-      id: PropTypes.number,
-      name: PropTypes.string,
-      date: PropTypes.string,
-      content: PropTypes.string,
-      excerpt: PropTypes.string,
-      image: PropTypes.string,
-    }),
-  ),
-  reFetch: PropTypes.func,
-  meta: PropTypes.shape({ page: PropTypes.number, lastPage: PropTypes.number }),
-};
+const mapDispatchToProps = (dispatch) => ({
+  fetchData: dispatch.articles.fetchList,
+});
 
-ArticlesList.defaultProps = {
-  listFlat: [],
-  error: null,
-  reFetch: null,
-  meta: { page: null, lastPage: null },
-  loading: false,
-};
-
-export default ArticlesList;
+export default connect(mapStateToProps, mapDispatchToProps)(ArticlesListContainer);
