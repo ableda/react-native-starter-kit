@@ -1,5 +1,5 @@
 /* global */
-import { init } from '@rematch/core';
+import { init, RematchRootState, RematchDispatch } from '@rematch/core';
 import createPersistPlugin, { getPersistor } from '@rematch/persist';
 import createLoadingPlugin from '@rematch/loading';
 import AsyncStorage from '@react-native-community/async-storage';

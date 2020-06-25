@@ -9,4 +9,9 @@ export default StyleSheet.create({
     borderRadius: buttonSize / 2,
     justifyContent: 'center',
   },
+  menuButton: {
+    // padding: '10%',
+    borderRadius: 3,
+    width: 125,
+  },
 });

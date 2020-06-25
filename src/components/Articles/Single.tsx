@@ -8,14 +8,14 @@ import { errorMessages } from '../../constants/messages';
 import { ArticlesSingleProps, ArticlesSingleState } from '../../types/ArticlesSingle';
 
 class ArticlesSingleContainer extends Component<ArticlesSingleProps, ArticlesSingleState> {
-  static propTypes = {
-    fetchData: PropTypes.func.isRequired,
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  };
+  // static propTypes = {
+  //   fetchData: PropTypes.func.isRequired,
+  //   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  // };
 
-  static defaultProps = {
-    id: null,
-  };
+  // static defaultProps = {
+  //   id: null,
+  // };
 
   constructor(props) {
     super(props);

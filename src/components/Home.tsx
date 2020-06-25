@@ -1,9 +1,12 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { StyleSheet } from 'react-native';
 import { Container, Content, Text, Button, View } from 'native-base';
 import Spacer from './UI/Spacer';
 import buttons from '../styles/buttons';
 import Logo from './Logo';
+import { menuMap } from '../store/menus';
+import { Actions } from 'react-native-router-flux';
 
 var styles = StyleSheet.create({
   buttonContainer: {
@@ -23,6 +26,11 @@ var styles = StyleSheet.create({
 });
 
 const Home = () => {
+
+  const buttonPress = (pageName: string) => {
+    Actions.menu({ menuName: pageName, menuItems: menuMap[pageName] });
+  }
+
   return (
     <Container>
       <Content padder>
@@ -31,8 +39,12 @@ const Home = () => {
         <Spacer size={15} />
 
         <View style={styles.buttonContainer}>
-          <Button primary={true} style={buttons.homeButton}>
-            <Text> CTA 1 </Text>
+          <Button
+            primary={true}
+            style={buttons.homeButton}
+            onPress={() => buttonPress('page1')}
+          >
+            <Text> Page 1 </Text>
           </Button>
 
           <Button primary={true} style={buttons.homeButton}>

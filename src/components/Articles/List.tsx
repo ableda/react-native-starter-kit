@@ -10,20 +10,20 @@ import images from '../../styles/images';
 import { ArticlesListProps, ArticlesListState } from '../../types/ArticlesList';
 
 class ArticlesListContainer extends Component<ArticlesListProps, ArticlesListState> {
-  static propTypes = {
-    listFlat: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    listPaginated: PropTypes.shape({}).isRequired,
-    meta: PropTypes.shape({
-      page: PropTypes.number,
-    }).isRequired,
-    fetchData: PropTypes.func.isRequired,
-    pagination: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    page: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  };
+  // static propTypes = {
+  //   listFlat: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  //   listPaginated: PropTypes.shape({}).isRequired,
+  //   meta: PropTypes.shape({
+  //     page: PropTypes.number,
+  //   }).isRequired,
+  //   fetchData: PropTypes.func.isRequired,
+  //   pagination: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  //   page: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  // };
 
-  static defaultProps = {
-    page: 1,
-  };
+  // static defaultProps = {
+  //   page: 1,
+  // };
 
   constructor(props) {
     super(props);

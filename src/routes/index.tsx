@@ -6,6 +6,7 @@ import AppConfig from '../constants/config';
 
 import Home from '../components/Home';
 import { ArticlesForm, ArticlesList, ArticlesSingle } from '../components/Articles';
+import Menu from '../components/Pages/Menu';
 
 const Index = (
   <Stack hideNavBar>
@@ -23,6 +24,7 @@ const Index = (
           {...DefaultProps.navbarProps}
         >
           <Scene key="home" component={Home} />
+          <Scene key="menu" component={Menu} />
         </Stack>
 
         <Stack
